@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './Login';
-import Dashboard from './Dashboard';
+import Dashboard from './file/Dashboard';
+import User from './file/User';
 
 
 
@@ -11,6 +12,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
+       <Route path="/users" element={<User />} />
     </Routes>
     </BrowserRouter>
   );

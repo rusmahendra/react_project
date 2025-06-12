@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SidebarNav from './include/Sidebar';
+import SidebarNav from '../include/Sidebar';
 
-import './css/style.css';
+import '../css/style.css';
 
 function Dashoard() {
   const navigate = useNavigate();

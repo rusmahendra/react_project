@@ -11,13 +11,13 @@ return (
    <nav className="sidebar">
         <h2>My Admin</h2>
 
-        <a href="#dashboard" className="sidebar-link active">
+        <a onClick={() => navigate('/dashboard')} className="sidebar-link active">
           <Home size={18} /> Dashboard
         </a>
 
-        <a href="#users" className="sidebar-link">
+        <div className="sidebar-link" onClick={() => navigate('/users')} >
           <Users size={18} /> Users
-        </a>
+        </div>
 
         <a href="#products" className="sidebar-link">
           <Package size={18} /> Products
