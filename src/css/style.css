@@ -1,0 +1,117 @@
+.adminheading
+{
+    margin-bottom: 24px;
+    color: #222;
+    font-weight: 600;
+}
+.main_container
+{
+    min-height: 100vh !important;
+    display: flex;
+    text-align: center !important;
+    justify-content: center !important;
+    background: #f5f6fa; 
+}
+.login_container
+{
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+/* Dashboard.css */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.sidebar {
+  width: 220px;
+  background: #2c3e50;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #ecf0f1;
+  font-size: 16px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-link:hover {
+  background: #34495e;
+  border-left: 4px solid #3498db;
+}
+.active {
+  background: #34495e;
+  border-left: 4px solid #3498db;
+}
+.sidebar-link.logout {
+  color: #e74c3c;
+}
+
+.sidebar-link.logout:hover {
+  border-left: 4px solid #e74c3c;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background: #ecf0f1;
+}
+
+/* Dashboard.css */
+
+/* Existing styles... */
+
+.dashboard-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.dashboard-box {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.dashboard-box:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard-box h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.dashboard-box p {
+  font-size: 28px;
+  font-weight: bold;
+  color: #3498db;
+}

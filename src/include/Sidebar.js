@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Home, Users, Package, LogOut, Sidebar } from 'lucide-react';
 function Sdebar() {
         const navigate = useNavigate();
 
@@ -7,12 +8,25 @@ function Sdebar() {
        navigate('/');
     }
 return (
-  <nav style={{ display: 'flex', gap: '20px', padding: '10px', background: '#f0f0f0' }}>
-            <a href="#dashboard">Dashboard</a>
-            <a href="#users">Users</a>
-            <a href="#products">Products</a>
-            <a onClick={handleLogout} style={{ cursor: 'pointer' }}>Logout</a>
-        </nav>
+   <nav className="sidebar">
+        <h2>My Admin</h2>
+
+        <a href="#dashboard" className="sidebar-link active">
+          <Home size={18} /> Dashboard
+        </a>
+
+        <a href="#users" className="sidebar-link">
+          <Users size={18} /> Users
+        </a>
+
+        <a href="#products" className="sidebar-link">
+          <Package size={18} /> Products
+        </a>
+
+        <div className="sidebar-link logout" onClick={handleLogout}>
+          <LogOut size={18} /> Logout
+        </div>
+      </nav>
 
 );
 

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import './css/style.css';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,17 +32,9 @@ function Login() {
     }
   };
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f6fa' }}>
-      <div style={{
-        background: '#fff',
-        borderRadius: '12px',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
-        padding: '32px 28px',
-        width: '100%',
-        maxWidth: '350px',
-        textAlign: 'center'
-      }}>
-        <h2 style={{ marginBottom: '24px', color: '#222', fontWeight: 600 }}>Admin Login</h2>
+    <div className='main_container'>
+      <div className='login_container'>
+        <h2 className="adminheading">Admin Login</h2>
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <input
             type="email"
