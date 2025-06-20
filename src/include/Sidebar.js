@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Users, Package, LogOut, Sidebar } from 'lucide-react';
 function Sdebar() {
@@ -7,6 +8,11 @@ function Sdebar() {
         localStorage.removeItem('isLoggedIn');
        navigate('/');
     }
+     useEffect(() => {
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      navigate('/');
+    }
+  }, [navigate]);
 return (
    <nav className="sidebar">
         <h2>My Admin</h2>
@@ -17,6 +23,10 @@ return (
 
         <div className="sidebar-link" onClick={() => navigate('/users')} >
           <Users size={18} /> Users
+        </div>
+
+        <div className="sidebar-link" onClick={() => navigate('/filemanager')} >
+          <Users size={18} /> File Manager
         </div>
 
         <a href="#products" className="sidebar-link">

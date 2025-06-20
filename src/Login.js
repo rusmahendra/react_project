@@ -1,97 +1,53 @@
-import { useState } from 'react';
-import './css/style.css';
-function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [loginSuccess, setLoginSuccess] = useState( );
-   
+import { React,useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import './css/login.css';
 
-  const handleLogin = async (e) => {
+
+function Login()
+{
+
+  const [email, setEmail] = useState('email');
+  const [password, setPassword] = useState('password');
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost/nodeapi/login.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json(); // Get the response data
-
-    if (data.status == "success") {
-      localStorage.setItem('isLoggedIn', 'true');
-      setMessage('Login successfuly Please Wait...');
- 
-
-      setTimeout(() => {
+   const apiurl = 'http://localhost/nodeapi/login.php';
+   const response = await fetch(apiurl,{
+    method : 'POST',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ email,password}),
+   });
+   const data = await response.json();
+    if(data.status === 'success') {
+        // Redirect to the dashboard or another page
+        localStorage.setItem('isLoggedIn',true);
         window.location.href = '/dashboard';
-      }, 1000);
-    } else {
-      setMessage(data.message);
-      setLoginSuccess(false);
-    }
+      } else {
+        // Handle login failure (e.g., show an error message)
+        alert('Login failed: ' + data.message);
+      }
   };
-  return (
-    <div className='main_container'>
-      <div className='login_container'>
-        <h2 className="adminheading">Admin Login</h2>
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            style={{
-              padding: '12px',
-              borderRadius: '6px',
-              border: '1px solid #dcdde1',
-              fontSize: '16px',
-              outline: 'none',
-              transition: 'border 0.2s'
-            }}
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-            style={{
-              padding: '12px',
-              borderRadius: '6px',
-              border: '1px solid #dcdde1',
-              fontSize: '16px',
-              outline: 'none',
-              transition: 'border 0.2s'
-            }}
-          />
-          <button
-            type="submit"
-            style={{
-              padding: '12px',
-              borderRadius: '6px',
-              border: 'none',
-              background: '#4f8cff',
-              color: '#fff',
-              fontWeight: 600,
-              fontSize: '16px',
-              cursor: 'pointer',
-              transition: 'background 0.2s'
-            }}
-          >
-            Login
-          </button>
-        </form>
-        {message && (
-          <p style={{
-            marginTop: '18px',
-            color: loginSuccess ? '#27ae60' : '#e84118',
-            fontWeight: 500
-          }}>{message}</p>
-        )}
+  return(
+<div>
+   <div className='login-container'>
+        <div className="text-center "> <h4>Admin Login</h4></div>
+        <hr></hr>
+      <form onSubmit={handleSubmit} >
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Email address</label>
+          <input type="email" className="form-control" id="email" placeholder="Enter email" onChange={(e)=>setEmail(e.target.value)}/>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">Password</label>
+          <input type="password" className="form-control" id="password" placeholder="Password" onChange={(e)=>setPassword(e.target.value)}/>
+        </div>
+        <button type="submit" className="btn btn-primary">Login</button>
+      </form>
+   </div>
       </div>
-    </div>
   );
 }
+
 export default Login;

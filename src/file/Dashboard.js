@@ -7,11 +7,7 @@ import '../css/style.css';
 function Dashoard() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      navigate('/');
-    }
-  }, [navigate]);
+ 
 
 
   return (

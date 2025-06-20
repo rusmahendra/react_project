@@ -1,106 +1,178 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
-import SidebarNav from '../include/Sidebar';
+import React, { useEffect } from 'react';
+import $ from 'jquery';
 import axios from 'axios';
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import 'datatables.net-dt/css/dataTables.dataTables.min.css';
+import 'datatables.net';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../css/style.css';
+import SidebarNav from '../include/Sidebar';
 
-function User() {
-  const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-
+function JQueryDataTable() {
   useEffect(() => {
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      navigate('/');
-    } else {
-      fetchUsers();
-    }
-  }, [navigate]);
+    import('bootstrap').then((bootstrap) => {
+      window.bootstrap = bootstrap;
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost/nodeapi/users.php');
-      setUsers(response.data);
-      setFilteredUsers(response.data); // initially show all
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      const modalElement = document.getElementById('myModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalBody = document.getElementById('modalBody');
 
-  useEffect(() => {
-    const result = users.filter(user =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase()) ||
-      user.phone.includes(search)
-    );
-    setFilteredUsers(result);
-  }, [search, users]);
+      // ✅ Single reusable modal instance
+      const modalInstance = new window.bootstrap.Modal(modalElement);
 
-  const handleView = (row) => alert(`Viewing: ${row.name}`);
-  const handleEdit = (row) => alert(`Editing: ${row.name}`);
-  const handleDelete = (row) => {
-    if (window.confirm(`Delete ${row.name}?`)) {
-      alert(`Deleted: ${row.name}`);
-    }
-  };
+      // ✅ Clean up stuck backdrop
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style = '';
+      });
 
-  const columns = [
-    { name: 'Name', selector: row => row.name, sortable: true },
-    { name: 'Email', selector: row => row.email, sortable: true },
-    { name: 'Phone', selector: row => row.phone },
-     { name: 'Role', selector: row => row.role },
-    {
-      name: 'Actions',
-      cell: row => (
-        <div className="table-actions">
-          <button className="icon-btn view" onClick={() => handleView(row)}>
-            <Eye size={16} />
-          </button>
-          <button className="icon-btn edit" onClick={() => handleEdit(row)}>
-            <Edit size={16} />
-          </button>
-          <button className="icon-btn delete" onClick={() => handleDelete(row)}>
-            <Trash2 size={16} />
-          </button>
-        </div>
-      ),
-      ignoreRowClick: true,
-      allowOverflow: true,
-      button: true,
-    },
-  ];
+      // ✅ Destroy any previous DataTable
+      if ($.fn.DataTable.isDataTable('#myTable')) {
+        $('#myTable').DataTable().destroy();
+      }
+
+      // ✅ Initialize DataTable with server-side + AJAX
+      $('#myTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+          url: 'http://localhost/nodeapi/users.php',
+          type: 'POST',
+          dataSrc: (json) => json.data || []
+        },
+        columns: [
+          { data: 'full_name' },
+          { data: 'email' },
+          { data: 'phone_number' },
+          { data: 'entrydate' },
+          {
+            data: 'id',
+            render: (data) => `
+              <button class="btn btn-info btn-sm view-btn" data-id="${data}">View</button>
+              <button class="btn btn-warning btn-sm edit-btn" data-id="${data}">Edit</button>
+              <button class="btn btn-danger btn-sm delete-btn" data-id="${data}">Delete</button>
+            `,
+            orderable: false
+          }
+        ]
+      });
+
+      // ✅ View Button
+      $('#myTable tbody').on('click', '.view-btn', function () {
+        const id = $(this).data('id');
+        modalTitle.textContent = 'View User';
+        modalBody.innerHTML = 'Loading...';
+        modalInstance.show();
+
+        axios.post('http://localhost/nodeapi/user_view.php', new URLSearchParams({ id }))
+          .then(response => {
+            const data = response.data.data;
+            modalBody.innerHTML = `
+              <p><strong>Name:</strong> ${data.full_name}</p>
+              <p><strong>Email:</strong> ${data.email}</p>
+              <p><strong>Phone:</strong> ${data.phone_number}</p>
+              <p><strong>Date:</strong> ${data.entrydate}</p>
+            `;
+          })
+          .catch(() => {
+            modalBody.innerHTML = `<p class="text-danger">Failed to load data.</p>`;
+          });
+      });
+
+      // ✅ Edit Button
+      $('#myTable tbody').on('click', '.edit-btn', function () {
+        const id = $(this).data('id');
+        modalTitle.textContent = 'Edit User';
+        modalBody.innerHTML = `
+          <form id="editForm">
+            <input type="hidden" name="id" value="${id}" />
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" name="name" class="form-control" placeholder="Edit name" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="Edit email" />
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        `;
+        modalInstance.show();
+
+        // Optionally handle form submission here with axios.post(...)
+      });
+
+      // ✅ Delete Button
+      $('#myTable tbody').on('click', '.delete-btn', function () {
+        const id = $(this).data('id');
+        modalTitle.textContent = 'Delete User';
+        modalBody.innerHTML = `
+          <p>Are you sure you want to delete user ID: <strong>${id}</strong>?</p>
+          <button class="btn btn-danger confirm-delete" data-id="${id}">Yes, Delete</button>
+        `;
+        modalInstance.show();
+
+        // Handle delete confirmation click
+        $(document).off('click', '.confirm-delete').on('click', '.confirm-delete', function () {
+          const deleteId = $(this).data('id');
+          axios.post('http://localhost/nodeapi/user_delete.php', new URLSearchParams({ id: deleteId }))
+            .then(() => {
+              modalInstance.hide();
+              $('#myTable').DataTable().ajax.reload();
+            })
+            .catch(() => {
+              modalBody.innerHTML += `<p class="text-danger mt-3">Delete failed.</p>`;
+            });
+        });
+      });
+    });
+  }, []);
 
   return (
     <div className="dashboard-container">
       <SidebarNav />
       <div className="main-content">
-        <h1>Users</h1>
+        <h1>All Leads</h1>
+        <div className="container mt-4">
+          <table id="myTable" className="display" style={{ width: '100%' }}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Search by name, email or phone"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
-        />
-
-        <DataTable
-          columns={columns}
-          data={filteredUsers}
-          progressPending={loading}
-          pagination
-          highlightOnHover
-          responsive
-        />
+        {/* Bootstrap Modal */}
+        <div
+          className="modal fade"
+          id="myModal"
+          tabIndex="-1"
+          aria-labelledby="modalTitle"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="modalTitle">Modal title</h5>
+                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div className="modal-body" id="modalBody">Loading...</div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-export default User;
+export default JQueryDataTable;
